@@ -1,0 +1,44 @@
+{
+  "name": "braigi",
+  "version": "1.0.0",
+  "description": "Voice-enabled web UI for Claude Code with speech-to-text and auto-TTS",
+  "bin": {
+    "braigi": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "daemon": "node lib/daemon.js"
+  },
+  "files": [
+    "bin/",
+    "lib/"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cli",
+    "mobile",
+    "remote",
+    "relay",
+    "web-ui",
+    "braigi"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rolucious/Braigi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rolucious/Braigi/issues"
+  },
+  "homepage": "https://github.com/Rolucious/Braigi#readme",
+  "author": "Rolucious",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.38",
+    "qrcode-terminal": "^0.12.0",
+    "ws": "^8.18.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

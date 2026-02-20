@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parakeet Transcription</title>
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-hover: rgba(51, 65, 85, 0.8);
+            --accent-cyan: #22d3ee;
+            --accent-purple: #818cf8;
+            --accent-green: #34d399;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(148, 163, 184, 0.1);
+            --gradient-1: linear-gradient(135deg, #22d3ee 0%, #818cf8 100%);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header { text-align: center; margin-bottom: 3rem; }
+        h1 {
+            font-size: 2.5rem; font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.75rem; }
+        .upload-section {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 4rem 2rem; text-align: center;
+            cursor: pointer; transition: all 0.3s; margin-bottom: 2rem;
+        }
+        .upload-section:hover { border-color: rgba(34, 211, 238, 0.3); transform: translateY(-2px); }
+        .upload-section.dragover { border-color: var(--accent-cyan); background: rgba(34, 211, 238, 0.05); }
+        .upload-section input[type="file"] { display: none; }
+        .upload-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.8; }
+        .upload-text { font-size: 1.2rem; font-weight: 600; }
+        .upload-hint { color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.5rem; }
+        #fileName {
+            margin-top: 1rem; padding: 8px 16px;
+            background: rgba(34, 211, 238, 0.1); border-radius: 12px;
+            color: var(--accent-cyan); font-family: monospace; display: none;
+        }
+        .loading-container { display: none; margin-bottom: 2rem; }
+        .loading-bar { height: 8px; width: 100%; background: var(--bg-hover); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--gradient-1); transition: width 0.3s; border-radius: 4px; }
+        .metrics { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+        .metric { text-align: center; min-width: 100px; }
+        .metric-label { font-size: 0.8rem; color: var(--text-secondary); }
+        .metric-value { font-size: 1.3rem; font-weight: 700; color: var(--accent-cyan); }
+        .metric-bar { height: 4px; margin-top: 0.3rem; background: rgba(34, 211, 238, 0.2); border-radius: 2px; }
+        .metric-bar-fill { height: 100%; width: 0%; transition: width 0.3s; border-radius: 2px; }
+        .controls { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
+        .btn {
+            padding: 12px 24px; border: none; border-radius: 12px;
+            font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary { background: var(--gradient-1); color: white; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .result-section {
+            background: var(--bg-card); border: 1px solid var(--glass-border);
+            border-radius: 24px; overflow: hidden; display: none;
+        }
+        .result-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .result-title { font-weight: 700; font-size: 1.1rem; }
+        .result-actions { display: flex; gap: 8px; }
+        .btn-sm {
+            padding: 6px 14px; font-size: 0.85rem; border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05); color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;
+        }
+        .btn-sm:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--accent-cyan); }
+        .chat-container {
+            padding: 1.5rem; max-height: 500px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .message-bubble {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem; border-radius: 12px; line-height: 1.6; white-space: pre-wrap;
+        }
+        .segment-info { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; margin-bottom: 0.3rem; }
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 12px 24px; background: var(--bg-hover);
+            border: 1px solid var(--accent-cyan); border-radius: 100px;
+            color: white; z-index: 1000; transition: transform 0.3s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        footer { text-align: center; margin-top: 3rem; padding: 1.5rem; color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Parakeet STT</h1>
+            <p class="subtitle">NVIDIA Parakeet TDT 0.6B v3 — ONNX INT8 — OpenAI-compatible</p>
+        </header>
+
+        <div class="upload-section" id="uploadArea">
+            <input type="file" id="fileInput" accept="audio/*,video/*">
+            <div class="upload-icon">&#9889;</div>
+            <div class="upload-text">Upload Audio</div>
+            <div class="upload-hint">Drag/drop or click to browse</div>
+            <div id="fileName"></div>
+        </div>
+
+        <div class="loading-container" id="loadingBar">
+            <div class="subtitle" style="margin-bottom: 0.75rem; font-size: 0.95rem;" id="progressText">Processing...</div>
+            <div class="loading-bar"><div class="progress-fill" id="progressBar"></div></div>
+            <div class="metrics">
+                <div class="metric">
+                    <div class="metric-label">CPU</div>
+                    <div class="metric-value" id="cpuUsage">0%</div>
+                    <div class="metric-bar"><div class="metric-bar-fill" id="cpuBar" style="background: var(--accent-cyan);"></div></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">RAM</div>
+                    <div class="metric-value" id="ramUsage" style="color: var(--accent-purple);">0%</div>
+                    <div class="metric-bar"><div class="metric-bar-fill" id="ramBar" style="background: var(--accent-purple);"></div></div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Chunks</div>
+                    <div class="metric-value" id="chunkProgress" style="color: var(--accent-green);">0/0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="uploadBtn" disabled>Transcribe</button>
+        </div>
+
+        <div class="result-section" id="resultContainer">
+            <div class="result-header">
+                <div class="result-title">Transcription</div>
+                <div class="result-actions">
+                    <button class="btn-sm" id="copyBtn">Copy</button>
+                    <button class="btn-sm" id="saveTxtBtn">TXT</button>
+                    <button class="btn-sm" id="saveSrtBtn">SRT</button>
+                </div>
+            </div>
+            <div class="chat-container" id="chatOutput"></div>
+        </div>
+
+        <footer>
+            <p>Parakeet TDT 0.6B v3 — ONNX INT8 — CPU inference</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastMessage"></span></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var uploadArea = document.getElementById('uploadArea');
+        var fileInput = document.getElementById('fileInput');
+        var uploadBtn = document.getElementById('uploadBtn');
+        var resultContainer = document.getElementById('resultContainer');
+        var chatOutput = document.getElementById('chatOutput');
+        var fileNameDisplay = document.getElementById('fileName');
+        var loadingBar = document.getElementById('loadingBar');
+        var currentData = null;
+
+        uploadArea.onclick = function() { fileInput.click(); };
+        fileInput.onchange = function() { if (fileInput.files[0]) handleFile(fileInput.files[0]); };
+
+        function handleFile(file) {
+            fileNameDisplay.textContent = file.name;
+            fileNameDisplay.style.display = 'inline-block';
+            uploadBtn.disabled = false;
+            startTranscription(file);
+        }
+
+        uploadBtn.onclick = function() { if (fileInput.files[0]) startTranscription(fileInput.files[0]); };
+
+        function startTranscription(file) {
+            setLoading(true);
+            var formData = new FormData();
+            formData.append('file', file);
+            formData.append('response_format', 'verbose_json');
+
+            var poll = setInterval(function() {
+                Promise.all([fetch('/status'), fetch('/metrics')]).then(function(responses) {
+                    responses[0].json().then(function(p) { if (p.status === 'processing') updateProgress(p); });
+                    responses[1].json().then(function(m) { updateMetrics(m); });
+                }).catch(function() {});
+            }, 500);
+
+            fetch('/v1/audio/transcriptions', { method: 'POST', body: formData }).then(function(resp) {
+                if (!resp.ok) throw new Error('Transcription failed');
+                return resp.json();
+            }).then(function(data) {
+                currentData = data;
+                renderResults(data);
+                showToast('Transcription complete');
+            }).catch(function(err) {
+                showToast('Error: ' + err.message);
+            }).finally(function() {
+                clearInterval(poll);
+                setLoading(false);
+            });
+        }
+
+        function updateProgress(p) {
+            document.getElementById('progressBar').style.width = p.progress_percent + '%';
+            document.getElementById('progressText').textContent = 'Transcribing... ' + p.progress_percent + '%';
+            document.getElementById('chunkProgress').textContent = p.current_chunk + '/' + p.total_chunks;
+            if (p.partial_text) {
+                resultContainer.style.display = 'block';
+                while (chatOutput.firstChild) chatOutput.removeChild(chatOutput.firstChild);
+                var bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = p.partial_text;
+                chatOutput.appendChild(bubble);
+            }
+        }
+
+        function updateMetrics(m) {
+            document.getElementById('cpuUsage').textContent = Math.round(m.cpu_percent) + '%';
+            document.getElementById('cpuBar').style.width = m.cpu_percent + '%';
+            document.getElementById('ramUsage').textContent = Math.round(m.ram_percent) + '%';
+            document.getElementById('ramBar').style.width = m.ram_percent + '%';
+        }
+
+        function setLoading(on) {
+            loadingBar.style.display = on ? 'block' : 'none';
+            uploadBtn.disabled = on;
+            uploadArea.style.opacity = on ? '0.5' : '1';
+            uploadArea.style.pointerEvents = on ? 'none' : 'auto';
+        }
+
+        function renderResults(data) {
+            resultContainer.style.display = 'block';
+            while (chatOutput.firstChild) chatOutput.removeChild(chatOutput.firstChild);
+            if (!data.segments) {
+                var bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = data.text || '';
+                chatOutput.appendChild(bubble);
+                return;
+            }
+            data.segments.forEach(function(seg) {
+                var wrapper = document.createElement('div');
+                var info = document.createElement('div');
+                info.className = 'segment-info';
+                var m = Math.floor(seg.start / 60);
+                var s = Math.floor(seg.start % 60);
+                info.textContent = m + ':' + String(s).padStart(2, '0');
+                var bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                bubble.textContent = seg.text;
+                wrapper.appendChild(info);
+                wrapper.appendChild(bubble);
+                chatOutput.appendChild(wrapper);
+            });
+        }
+
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 3000);
+        }
+
+        document.getElementById('copyBtn').onclick = function() {
+            if (!currentData) return;
+            var text = currentData.segments ? currentData.segments.map(function(s) { return s.text; }).join('\n') : currentData.text;
+            navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard');
+        };
+
+        document.getElementById('saveTxtBtn').onclick = function() {
+            if (!currentData) return;
+            var text = currentData.segments ? currentData.segments.map(function(s) { return s.text; }).join('\n') : currentData.text;
+            download(text, 'transcription.txt');
+        };
+
+        document.getElementById('saveSrtBtn').onclick = function() {
+            if (!currentData || !currentData.segments) return;
+            var srt = '';
+            currentData.segments.forEach(function(s, i) {
+                srt += (i + 1) + '\n' + fmtSrt(s.start) + ' --> ' + fmtSrt(s.end) + '\n' + s.text + '\n\n';
+            });
+            download(srt, 'transcription.srt');
+        };
+
+        function fmtSrt(sec) {
+            var h = Math.floor(sec / 3600).toString().padStart(2, '0');
+            var m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+            var s = Math.floor(sec % 60).toString().padStart(2, '0');
+            var ms = Math.floor((sec % 1) * 1000).toString().padStart(3, '0');
+            return h + ':' + m + ':' + s + ',' + ms;
+        }
+
+        function download(content, filename) {
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
+            a.download = filename;
+            a.click();
+        }
+
+        uploadArea.ondragover = function(e) { e.preventDefault(); uploadArea.classList.add('dragover'); };
+        uploadArea.ondragleave = function() { uploadArea.classList.remove('dragover'); };
+        uploadArea.ondrop = function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files[0]) {
+                fileInput.files = e.dataTransfer.files;
+                handleFile(e.dataTransfer.files[0]);
+            }
+        };
+    });
+    </script>
+</body>
+</html>

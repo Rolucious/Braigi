@@ -1,0 +1,116 @@
+# Braigi - Voice-enabled Web UI for Claude Code
+# STT: Parakeet (CPU, ONNX INT8) + TTS: Speaches (GPU, Kokoro-82M)
+#
+# Components:
+# - parakeet: CPU-based STT (NVIDIA Parakeet TDT 0.6B v3, ONNX INT8)
+#   - Endpoint: POST /v1/audio/transcriptions (OpenAI-compatible)
+# - speaches: GPU-accelerated TTS (Kokoro-82M, CUDA)
+#   - Endpoint: POST /v1/audio/speech (OpenAI-compatible)
+# - braigi relay daemon: Node.js host process (not Docker — needs Agent SDK + filesystem)
+#   - Web UI on port 27244, proxies STT/TTS through /api/stt and /api/tts
+#
+# Requirements:
+# - Node.js >= 18 (for relay daemon)
+# - Docker Compose (for containers below)
+# - NVIDIA GPU + nvidia-container-toolkit (for speaches TTS only — parakeet STT is CPU-only)
+#
+# Usage:
+# 1. Deploy stack: docker compose -f infra/docker-compose.yml up -d
+# 2. Wait for parakeet healthcheck (model downloads ~2.4 GB on first run)
+# 3. Start relay: npx braigi
+# 4. Open http://localhost:27244 — type or click mic button to speak
+
+x-security-opts: &security-opts
+  security_opt:
+    - no-new-privileges:true
+
+x-logging: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 240s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+networks:
+  braigi:
+    driver: bridge
+
+services:
+  # =============================================================================
+  # SPEACHES - GPU-Accelerated TTS Server
+  # =============================================================================
+  # OpenAI-compatible TTS API (STT moved to Parakeet on CPU)
+  # TTS: Kokoro-82M (ranked #1 TTS Arena, natural English voices)
+  # Models auto-download on first use, persist in HuggingFace cache volume
+  speaches:
+    image: ghcr.io/speaches-ai/speaches:latest-cuda
+    container_name: speaches
+    restart: unless-stopped
+    <<: [*security-opts, *logging]
+    ports:
+      - "127.0.0.1:${SPEACHES_PORT:-27246}:8000"
+    environment:
+      # STT moved to Parakeet (CPU) — no models to preload here
+      # TTS model loads on first request (~2s) then stays cached
+      PRELOAD_MODELS: '[]'
+      TTS_MODEL_TTL: "3600"   # Unload TTS after 1hr idle (saves VRAM)
+      ENABLE_UI: "true"
+      LOG_LEVEL: "info"
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "8000"
+    volumes:
+      - ./data/speaches/huggingface:/home/ubuntu/.cache/huggingface/hub
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+        limits:
+          memory: 16G
+          cpus: '8.0'
+    networks:
+      - braigi
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      <<: *healthcheck-defaults
+      start_period: 180s  # Model download + loading takes time on first start
+
+  # =============================================================================
+  # PARAKEET - CPU-Based STT Server (NVIDIA Parakeet TDT 0.6B v3)
+  # =============================================================================
+  # OpenAI-compatible STT endpoint running on CPU (ONNX INT8 quantized)
+  # Replaces Whisper large-v3 on GPU — better WER (6.05% vs 7.4%), frees ~2.5GB VRAM
+  # Model auto-downloads ~2.4GB on first start, persists in models volume
+  parakeet:
+    build:
+      context: ./parakeet
+      dockerfile: Dockerfile
+    image: parakeet-tdt:cpu
+    container_name: parakeet
+    restart: unless-stopped
+    <<: [*security-opts, *logging]
+    ports:
+      - "127.0.0.1:${PARAKEET_PORT:-27245}:5092"
+    volumes:
+      - ./data/parakeet/models:/app/models
+    environment:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '8.0'
+    networks:
+      - braigi
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5092/health')"]
+      <<: *healthcheck-defaults
+      start_period: 120s

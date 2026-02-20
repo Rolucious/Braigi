@@ -1,0 +1,61 @@
+# ── Codex CLI Configuration ──────────────────────────────
+# Location: ~/.codex/config.toml
+# Docs: https://github.com/openai/codex
+
+# ── Global defaults (interactive coding) ──────────────────
+model = "gpt-5.3-codex"                    # or "gpt-4o" if no Codex-tier access
+model_reasoning_effort = "high"
+model_reasoning_summary = "detailed"
+model_verbosity = "high"
+model_auto_compact_token_limit = 150000
+personality = "pragmatic"
+web_search = "cached"
+
+# ── Review profile (codex exec review) ────────────────────
+# Fast, low-noise, auto-approve — optimized for CI-like code reviews
+[profiles.review]
+model = "gpt-5.3-codex"                    # or "gpt-4o"
+model_reasoning_effort = "high"
+model_reasoning_summary = "none"
+model_verbosity = "low"
+personality = "none"
+web_search = "disabled"
+sandbox_mode = "danger-full-access"         # needed because sandbox blocks git
+approval_policy = "never"                   # auto-approve all tool calls
+hide_agent_reasoning = true
+
+[profiles.review.history]
+persistence = "none"                        # don't save review sessions
+
+# ── Quick profile (MCP quick questions) ───────────────────
+# Cheapest model, minimum tokens — for simple lookups
+[profiles.quick]
+model = "gpt-5.1-codex-mini"               # or "gpt-4o-mini"
+model_reasoning_effort = "low"
+model_reasoning_summary = "none"
+model_verbosity = "low"
+personality = "pragmatic"
+web_search = "disabled"
+
+# ── Deep profile (complex multi-step coding) ──────────────
+# Maximum reasoning power — for architecture decisions
+[profiles.deep]
+model = "gpt-5.3-codex"                    # or "gpt-4o"
+model_reasoning_effort = "high"
+model_reasoning_summary = "detailed"
+model_verbosity = "high"
+web_search = "cached"
+
+# ── MCP servers ──────────────────────────────────────────
+# Context7: gives Codex access to official library/framework documentation
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+# ── Project trust ─────────────────────────────────────────
+# Add your project paths here. "untrusted" = Codex asks before running commands
+# "full" = Codex can run commands without asking (use for trusted repos only)
+[projects."/path/to/your/projects"]
+trust_level = "untrusted"

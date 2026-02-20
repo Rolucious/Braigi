@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+
+# Runtime
+*.pid
+*.log
+.braigi/
+.claude/
+
+# Model data and caches
+infra/data/
+infra/parakeet/models/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

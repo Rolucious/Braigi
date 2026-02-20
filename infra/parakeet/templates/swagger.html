@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Parakeet API</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; background: #0a0f1a; color: #f8fafc; }
+        h1 { color: #22d3ee; }
+        pre { background: #1e293b; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+        code { color: #34d399; }
+        a { color: #818cf8; }
+    </style>
+</head>
+<body>
+    <h1>Parakeet Transcription API</h1>
+    <p>OpenAI-compatible speech-to-text endpoint.</p>
+    <h2>POST /v1/audio/transcriptions</h2>
+    <pre><code>curl -X POST http://localhost:27245/v1/audio/transcriptions \
+  -F "file=@audio.wav" \
+  -F "response_format=json"</code></pre>
+    <h2>Response formats</h2>
+    <ul>
+        <li><code>json</code> — <code>{"text": "..."}</code></li>
+        <li><code>text</code> — plain text</li>
+        <li><code>srt</code> — SubRip subtitles</li>
+        <li><code>vtt</code> — WebVTT subtitles</li>
+        <li><code>verbose_json</code> — segments with timestamps</li>
+    </ul>
+    <h2>Other endpoints</h2>
+    <ul>
+        <li><a href="/health">GET /health</a> — Health check</li>
+        <li><a href="/metrics">GET /metrics</a> — CPU/RAM metrics</li>
+        <li><a href="/openapi.json">GET /openapi.json</a> — OpenAPI spec</li>
+    </ul>
+</body>
+</html>
