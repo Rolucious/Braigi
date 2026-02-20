@@ -58,8 +58,8 @@
   to { transform: rotate(360deg); }
 }
 
-/* Voice toggle button in header */
-#voice-toggle-btn {
+/* TTS toggle button in header */
+#tts-btn {
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -73,21 +73,26 @@
   transition: background 0.15s, color 0.15s;
 }
 
-#voice-toggle-btn .lucide {
+#tts-btn .lucide {
   width: 16px;
   height: 16px;
 }
 
-#voice-toggle-btn:hover {
+#tts-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text);
 }
 
-#voice-toggle-btn.active {
+#tts-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+#tts-btn.active {
   color: var(--accent);
 }
 
-#voice-toggle-btn.active:hover {
+#tts-btn.active:hover {
   background: rgba(var(--accent-rgb, 99, 102, 241), 0.15);
 }
 

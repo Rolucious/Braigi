@@ -128,7 +128,7 @@
         </div>
         <button id="usage-header-btn" class="hidden" title="Usage"><i data-lucide="dollar-sign"></i></button>
         <button id="terminal-toggle-btn" title="Terminal"><i data-lucide="square-terminal"></i><span id="terminal-count" class="hidden"></span></button>
-        <button id="voice-toggle-btn" title="Toggle voice"><i data-lucide="mic-off"></i></button>
+        <button id="tts-btn" title="Read aloud (TTS off)"><i data-lucide="volume-x"></i></button>
         <button id="qr-btn" title="Share"><i data-lucide="share"></i></button>
         <div id="qr-overlay" class="hidden">
           <div id="qr-overlay-inner">
@@ -158,6 +158,11 @@
             <label class="notif-option" id="tts-toggle">
               <span><i data-lucide="headphones" style="width:14px;height:14px"></i> Read aloud (TTS)</span>
               <input type="checkbox" id="tts-toggle-input">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+            <label class="notif-option">
+              <span><i data-lucide="mic" style="width:14px;height:14px"></i> Voice input (STT)</span>
+              <input type="checkbox" id="voice-mode-toggle-input">
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
             </label>
             <div class="notif-divider"></div>
