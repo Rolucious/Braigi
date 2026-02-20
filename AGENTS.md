@@ -9,11 +9,12 @@ You are reviewing a Node.js web application (Braigi — voice-enabled web UI for
 - LOW: Style, documentation, or minor optimization
 
 ## What to Check
-1. **Security**: no hardcoded secrets, proper input validation, no shell injection, XSS prevention, WebSocket origin validation
-2. **Reliability**: error handling in async code, graceful shutdown, connection recovery, resource cleanup
+1. **Security**: no hardcoded secrets, proper input validation, no shell injection, XSS prevention, WebSocket origin validation, CSP compliance (no unsafe-inline), DOMPurify on untrusted HTML/SVG
+2. **Reliability**: error handling in async code, graceful shutdown, connection recovery, resource cleanup, bounded queues/arrays (no unbounded growth)
 3. **Docker services**: health checks present, resource limits set, no-new-privileges, log rotation
 4. **Dependencies**: no known vulnerable packages, pinned versions where needed
-5. **Frontend**: no sensitive data in localStorage, proper CSP compatibility, accessible UI
+5. **Frontend**: no sensitive data in localStorage, proper CSP compatibility, accessible UI, no innerHTML with unsanitized content
+6. **Version bump**: if the diff contains `feat:` or `fix:` changes but `package.json` version is unchanged, flag as MEDIUM ("missing version bump"). Rules: feat → MINOR bump, fix → PATCH bump. Version format: semver (MAJOR.MINOR.PATCH)
 
 ## Inline Suppressions
 

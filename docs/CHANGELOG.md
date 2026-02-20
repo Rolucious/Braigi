@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.1
+
+### Security & Resource Hardening
+- Reject WebSocket upgrades with missing Origin header (CSWSH prevention)
+- Remove `unsafe-inline` from CSP `script-src` directive
+- Add Content-Type CSRF check on permission-response POST
+- Sanitize mermaid SVG through DOMPurify before DOM injection
+- Bound message queue to 100 entries with overflow drop
+- Cap messageUUIDs at 5000 and rebase indices on history trim
+- Convert sync FS calls to async in file browser (non-blocking)
+- Cancel in-progress STT recording when sending a message
+
+## v1.1.0
+
+### Bug Fixes
+- Fix voice state not resetting fully on session switch (dangling audioChunks/mediaRecorder)
+- Increase healthcheck interval to 300s (was causing false restarts)
+- Address 36 findings from full Codex source analysis (20 HIGH/MEDIUM + 12 MEDIUM + 4 LOW)
+
 ## v1.0.0
 
 Initial public release.
