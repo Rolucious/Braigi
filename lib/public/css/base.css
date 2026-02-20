@@ -104,3 +104,63 @@ html, body {
   transform: translateX(-50%) translateY(0);
 }
 
+/* --- Terminal Takeover --- */
+#takeover-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--sidebar-active);
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#takeover-banner span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#takeover-banner.hidden {
+  display: none;
+}
+
+#return-to-web-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#return-to-web-btn:hover {
+  background: var(--accent-hover);
+}
+
+#takeover-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+#takeover-btn:hover {
+  color: var(--accent);
+}
+
+#takeover-btn.hidden {
+  display: none;
+}
+

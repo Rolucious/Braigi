@@ -128,6 +128,7 @@
         </div>
         <button id="usage-header-btn" class="hidden" title="Usage"><i data-lucide="dollar-sign"></i></button>
         <button id="terminal-toggle-btn" title="Terminal"><i data-lucide="square-terminal"></i><span id="terminal-count" class="hidden"></span></button>
+        <button id="takeover-btn" class="hidden" title="Continue in Terminal" aria-label="Continue in Terminal"><i data-lucide="terminal"></i></button>
         <button id="tts-btn" title="Read aloud (TTS off)"><i data-lucide="volume-x"></i></button>
         <button id="qr-btn" title="Share"><i data-lucide="share"></i></button>
         <div id="qr-overlay" class="hidden">
@@ -231,6 +232,10 @@
     <div id="todo-sticky" class="hidden"></div>
     <button id="new-msg-btn" class="hidden" aria-label="Scroll to bottom"></button>
     <button id="usage-fab" class="hidden" aria-label="Usage"><i data-lucide="gauge"></i></button>
+    <div id="takeover-banner" class="hidden">
+      <span><i data-lucide="terminal" style="width:14px;height:14px"></i> Session active in terminal</span>
+      <button id="return-to-web-btn">Return to Web Chat</button>
+    </div>
     <div id="input-area">
       <div id="input-wrapper">
         <div id="slash-menu"></div>

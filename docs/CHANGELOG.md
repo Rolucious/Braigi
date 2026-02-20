@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.2.0
+
+### Terminal Takeover
+- **Continue in Terminal** button: seamlessly switch from web chat to a full `claude --resume` terminal session
+- Chat input hidden and info banner shown while terminal is active
+- **Return to Web Chat** button or terminal exit auto-restores web chat mode
+- Server-side PTY exit handler ensures clean state even if all clients disconnect
+- UUID validation on session IDs prevents command injection
+- Capacity check before aborting SDK query (no partial state change on failure)
+- Pending permissions and ask-user prompts cleared on takeover
+- All connected clients see takeover state (multi-device aware)
+
 ## v1.1.1
 
 ### Security & Resource Hardening
