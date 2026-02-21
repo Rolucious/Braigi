@@ -1,6 +1,6 @@
 {
   "name": "braigi",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Voice-enabled web UI for Claude Code with speech-to-text and auto-TTS",
   "bin": {
     "braigi": "./bin/cli.js"
