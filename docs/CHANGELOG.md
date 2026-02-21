@@ -1,5 +1,57 @@
 # Changelog
 
+## v1.6.0
+
+### Session Moving & Plan Approval Fix
+- **Move sessions between projects**: right-click a session in the sidebar and choose "Move to..." to transfer it to another project — history, settings, and backend preference all travel with it
+- **Plan approval no longer loops**: if you didn't respond to an ExitPlanMode prompt within 5 minutes, it would time out and re-ask in a loop; now plans wait 30 minutes and orphaned prompts are cleaned up when a query ends
+- **ExitPlanMode excluded from yolo mode**: plan approvals always require manual confirmation, even with yolo mode enabled
+- Session moves are now safe against data loss — the target project receives the session before the source deletes it, so a failed import can't lose your session
+- Sessions with an active terminal takeover can't be moved (prevents orphaned PTY processes)
+
+## v1.5.0
+
+### Waveform Visualizer, Queue Button, Project Creation, Voice Improvements
+- **Voice waveform visualizer**: real-time animated frequency bars replace the textarea while recording
+- **Message queue**: queue follow-up messages while Claude is processing (Ctrl+Enter or click queue button), auto-sent when turn completes
+- **Add project via web UI**: "Add project" button in project dropdown opens a modal to register new project directories
+- Removed interim transcription (unreliable partial results) in favor of final-only STT
+- TTS retry logic with cap (max 2 retries per sentence, then skip)
+- TTS prefetch error recovery (re-queue on fetch failure)
+- STT proxy timeout increased to 120s for long recordings
+- Parakeet chunk size reduced from 1.5 min to 1.0 min for faster processing
+
+## v1.4.1
+
+### Voice Proxy Fix
+- Guard voice proxy handlers against double header writes (prevents crashes on aborted requests)
+
+## v1.4.0
+
+### Turn Timing Instrumentation
+- Per-turn timing: overhead, time-to-first-token, per-tool durations, total API time
+- Timing data shown in turn metadata footer
+
+## v1.3.1
+
+### SDK Permission Fixes
+- Grant Claude SDK full server access via `bypassPermissions`
+- Disable Codex sandbox and persist always-allow tool decisions
+
+## v1.3.0
+
+### Codex as Interactive AI Backend
+- **Dual backend**: switch between Claude and Codex (OpenAI gpt-5.3-codex) per session
+- Model selector in input bar for quick backend switching
+- Codex integration via MCP tool (`codex` / `codex-reply`) with thread persistence
+- Backend preference saved per session and restored on reload
+
+## v1.2.1
+
+### Terminal Takeover Hardening
+- Prevent environment variable leaks to terminal sessions
+- Fix stuck takeover state when terminal exits unexpectedly
+
 ## v1.2.0
 
 ### Terminal Takeover
@@ -37,7 +89,6 @@ Initial public release.
 
 ### Voice Integration
 - **Speech-to-text**: click mic to record, click again to stop — transcribed text appears in input
-- **Live transcription**: see partial text while still speaking (updates every ~3 seconds)
 - **Auto-TTS**: Claude's responses read aloud (toggle on/off, skips code blocks)
 - **Review before send**: edit transcribed text before sending
 - STT via Parakeet (CPU, ONNX INT8 — no GPU needed)
@@ -46,7 +97,7 @@ Initial public release.
 ### Web UI
 - Real-time markdown rendering as Claude responds
 - Tool approvals — approve or reject Claude's tool calls from the browser
-- **Yolo mode** — auto-approve all tool permission requests
+- **Yolo mode** — auto-approve all tool permission requests without interaction
 - Full-text session search with hit timeline
 - Rewind to any previous turn with file diffs
 - Plan approval UI for `ExitPlanMode`

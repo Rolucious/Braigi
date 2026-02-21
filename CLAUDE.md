@@ -20,7 +20,23 @@ Braigi uses **semantic versioning** (`MAJOR.MINOR.PATCH`) in `package.json`.
 - `chore:` / `docs:` commits do NOT require a bump (but may include one)
 - Version bump goes in its own commit: `chore: bump version to x.y.z`
 - The version bump commit comes AFTER the functional commit(s)
-- `docs/CHANGELOG.md` MUST be updated for MINOR and MAJOR bumps; PATCH updates are optional but encouraged
+
+## Documentation Updates (MANDATORY on every push)
+
+Before every `git push`, update these two files:
+
+### `docs/CHANGELOG.md`
+- Add an entry for the new version under a `## vX.Y.Z` heading
+- Write for humans: explain what changed and why it matters, not implementation details
+- Lead with the user-visible outcome ("you can now...", "fixes the issue where...")
+- Group related changes under a short descriptive sub-heading (e.g., "### Session Moving")
+- Skip internal refactors unless they affect behavior — nobody cares about variable renames
+- Keep entries concise: 1-2 sentences per bullet, no code snippets
+
+### `README.md`
+- Update the **Features** list if a new user-facing capability was added
+- Update **Environment Variables**, **CLI Usage**, or **Architecture** sections if those changed
+- Do NOT update README for pure bug fixes or internal changes
 
 ## Code Style
 

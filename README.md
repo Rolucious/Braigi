@@ -4,17 +4,21 @@ Voice-enabled web UI for [Claude Code](https://docs.anthropic.com/en/docs/claude
 
 ## Features
 
-- **Text & voice input** — type normally or click the mic button to record speech-to-text (click again to stop)
-- **Auto-TTS** — Claude's responses read aloud (toggle on/off, skips code blocks)
+- **Text & voice input** — type normally or click the mic to record; live waveform visualizer while recording
+- **Auto-TTS** — Claude's responses read aloud sentence-by-sentence with prefetch (toggle on/off, skips code blocks)
+- **Dual AI backends** — switch between Claude and Codex (OpenAI gpt-5.3-codex) per session
 - **Yolo mode** — auto-approve all tool permission requests without interaction
 - **Tool approvals** — approve or reject Claude's tool calls from the browser
+- **Plan approval** — review and approve/reject ExitPlanMode plans in the browser
+- **Message queue** — queue follow-up messages while Claude is processing (auto-sent when turn completes)
+- **Terminal takeover** — seamlessly switch from web chat to a full `claude --resume` terminal session
 - **CLI session browser** — browse and resume old Claude CLI sessions from the sidebar
-- **Review before send** — optionally preview transcribed speech before sending
 - **File browser** — navigate and view project files in the sidebar
 - **Terminal tabs** — spawn and manage terminal sessions
-- **Session history** — persistent JSONL-based session storage with search
-- **Multi-project** — register multiple project directories, each with its own slug and sessions
+- **Session history** — persistent JSONL-based session storage with full-text search and hit timeline
+- **Multi-project** — register multiple projects, move sessions between them, add projects from the web UI
 - **Streaming** — real-time markdown rendering as Claude responds
+- **Rewind** — rewind to any previous turn with file diffs
 
 ## Architecture
 
