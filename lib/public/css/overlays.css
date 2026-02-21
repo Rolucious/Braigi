@@ -417,6 +417,26 @@
 #resume-session-input:focus { border-color: var(--text-dimmer); }
 #resume-session-input::placeholder { color: var(--text-muted); font-family: "Inter", system-ui, sans-serif; }
 
+/* --- Add project modal --- */
+#add-project-modal { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; }
+#add-project-modal.hidden { display: none; }
+
+#add-project-input {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: "SF Mono", Menlo, Monaco, monospace;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#add-project-input:focus { border-color: var(--text-dimmer); }
+#add-project-input::placeholder { color: var(--text-muted); font-family: "Inter", system-ui, sans-serif; }
+
 /* --- Notification help modal --- */
 #notif-help-modal { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; }
 #notif-help-modal.hidden { display: none; }

@@ -48,7 +48,7 @@
         </div>
       </div>
       <div id="project-hint" class="hidden">
-        <span class="project-hint-text">Run <code>npx braigi</code> in other directories to add more projects.</span>
+        <span class="project-hint-text">Tip: You can also run <code>npx braigi</code> in other directories.</span>
         <button id="project-hint-dismiss" type="button" aria-label="Dismiss"><i data-lucide="x"></i></button>
       </div>
     </nav>
@@ -241,11 +241,13 @@
       <button id="return-to-web-btn">Return to Web Chat</button>
     </div>
     <div id="input-area">
+      <div id="queue-chips" class="hidden"></div>
       <div id="input-wrapper">
         <div id="slash-menu"></div>
         <div id="input-row">
           <div id="image-preview-bar"></div>
           <textarea id="input" rows="1" placeholder="Message Claude Code..." enterkeyhint="send"></textarea>
+          <canvas id="voice-waveform" class="hidden"></canvas>
           <div id="input-bottom">
             <div id="attach-wrap">
               <button id="attach-btn" type="button" aria-label="Attach"><i data-lucide="plus"></i></button>
@@ -260,6 +262,7 @@
                 <div id="model-menu" class="hidden"></div>
               </div>
               <button id="mic-btn" type="button" aria-label="Click to speak" title="Click to speak"><i data-lucide="mic"></i></button>
+              <button id="queue-btn" class="hidden" type="button" aria-label="Queue message" title="Queue message (Ctrl+Enter)"><i data-lucide="list-plus"></i><span id="queue-badge" class="hidden"></span></button>
               <button id="send-btn" disabled aria-label="Send"><i data-lucide="arrow-up"></i></button>
             </div>
           </div>
@@ -357,6 +360,22 @@
     <div class="confirm-actions">
       <button class="confirm-btn confirm-cancel" id="resume-cancel">Cancel</button>
       <button class="confirm-btn confirm-ok" id="resume-ok">Resume</button>
+    </div>
+  </div>
+</div>
+
+<div id="add-project-modal" class="hidden">
+  <div class="confirm-backdrop"></div>
+  <div class="confirm-dialog">
+    <div class="resume-modal-title">Add project</div>
+    <div class="resume-modal-body">
+      <p>Enter the absolute path to a project directory.</p>
+      <input type="text" id="add-project-input" placeholder="/path/to/project" autocomplete="off" spellcheck="false">
+      <div id="add-project-error" class="hidden" style="color:var(--error);font-size:13px;margin-top:8px;"></div>
+    </div>
+    <div class="confirm-actions">
+      <button class="confirm-btn confirm-cancel" id="add-project-cancel">Cancel</button>
+      <button class="confirm-btn confirm-ok" id="add-project-ok">Add</button>
     </div>
   </div>
 </div>
